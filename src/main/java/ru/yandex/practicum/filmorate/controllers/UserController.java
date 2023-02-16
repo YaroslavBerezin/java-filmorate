@@ -21,7 +21,7 @@ public class UserController {
 
     @PostMapping
     private User createUser(@RequestBody User user) throws ValidationException {
-        isValid(user);
+        checkValidation(user);
         user.setId(++id);
         users.put(user.getId(), user);
         log.debug("User '" + user.getName() + "' created successfully");
@@ -30,7 +30,7 @@ public class UserController {
 
     @PutMapping
     public User updateUser(@RequestBody User user) throws ValidationException, IncorrectIdException {
-        isValid(user);
+        checkValidation(user);
 
         if (users.containsKey(user.getId())) {
             users.put(user.getId(), user);
@@ -47,7 +47,7 @@ public class UserController {
         return new ArrayList<>(users.values());
     }
 
-    public static boolean isValid(User user) {
+    public static void checkValidation(User user) {
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
@@ -76,7 +76,5 @@ public class UserController {
             log.debug("Validation error: Users birthday can't be in the future");
             throw new ValidationException("Users birthday can't be in the future");
         }
-
-        return true;
     }
 }

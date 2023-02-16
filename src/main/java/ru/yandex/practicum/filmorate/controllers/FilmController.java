@@ -21,7 +21,7 @@ public class FilmController {
 
     @PostMapping
     private Film addFilm(@RequestBody Film film) {
-        isValid(film);
+        checkValidation(film);
         film.setId(++id);
         films.put(film.getId(), film);
         log.debug("Film '" + film.getName() + "' added successfully");
@@ -30,7 +30,7 @@ public class FilmController {
 
     @PutMapping
     public Film updateFilm(@RequestBody Film film) throws ValidationException, IncorrectIdException {
-        isValid(film);
+        checkValidation(film);
 
         if (films.containsKey(film.getId())) {
             films.put(film.getId(), film);
@@ -47,7 +47,7 @@ public class FilmController {
         return new ArrayList<>(films.values());
     }
 
-    public static boolean isValid(Film film) {
+    public static void checkValidation(Film film) {
         if (film.getName().isBlank()) {
             log.debug("Validation error: Films name can't be blank");
             throw new ValidationException("Films name can't be blank");
@@ -67,7 +67,5 @@ public class FilmController {
             log.debug("Validation error: Films duration can't be negative");
             throw new ValidationException("Films duration can't be negative");
         }
-
-        return true;
     }
 }

@@ -23,7 +23,7 @@ public class FilmValidationTest {
                 .duration(1)
                 .build();
 
-        final ValidationException exception = assertThrows(ValidationException.class, () -> FilmController.isValid(film));
+        final ValidationException exception = assertThrows(ValidationException.class, () -> FilmController.checkValidation(film));
         assertEquals("Films name can't be blank", exception.getMessage());
     }
 
@@ -36,7 +36,7 @@ public class FilmValidationTest {
                 .duration(1)
                 .build();
 
-        final ValidationException exception = assertThrows(ValidationException.class, () -> FilmController.isValid(film));
+        final ValidationException exception = assertThrows(ValidationException.class, () -> FilmController.checkValidation(film));
         assertEquals("Films description can't be longer than 200 chars", exception.getMessage());
     }
 
@@ -49,7 +49,7 @@ public class FilmValidationTest {
                 .duration(1)
                 .build();
 
-        final ValidationException exception = assertThrows(ValidationException.class, () -> FilmController.isValid(film));
+        final ValidationException exception = assertThrows(ValidationException.class, () -> FilmController.checkValidation(film));
         assertEquals("Films release date can't be before 28.12.1895", exception.getMessage());
     }
 
@@ -62,7 +62,7 @@ public class FilmValidationTest {
                 .duration(-1)
                 .build();
 
-        final ValidationException exception = assertThrows(ValidationException.class, () -> FilmController.isValid(film));
+        final ValidationException exception = assertThrows(ValidationException.class, () -> FilmController.checkValidation(film));
         assertEquals("Films duration can't be negative", exception.getMessage());
     }
 }
