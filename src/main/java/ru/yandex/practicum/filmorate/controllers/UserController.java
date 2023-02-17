@@ -21,7 +21,7 @@ public class UserController {
 
     @PostMapping
     private User createUser(@RequestBody User user) throws ValidationException {
-        checkValidation(user);
+        validate(user);
         user.setId(++id);
         users.put(user.getId(), user);
         log.debug("User '" + user.getName() + "' created successfully");
@@ -30,7 +30,7 @@ public class UserController {
 
     @PutMapping
     public User updateUser(@RequestBody User user) throws ValidationException, IncorrectIdException {
-        checkValidation(user);
+        validate(user);
 
         if (users.containsKey(user.getId())) {
             users.put(user.getId(), user);
@@ -47,7 +47,7 @@ public class UserController {
         return new ArrayList<>(users.values());
     }
 
-    public static void checkValidation(User user) {
+    public static void validate(User user) {
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }

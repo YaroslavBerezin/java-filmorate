@@ -21,7 +21,7 @@ public class UserValidationTest {
                 .birthday(LocalDate.of(2003, 2, 14))
                 .build();
 
-        final ValidationException exception = assertThrows(ValidationException.class, () -> UserController.checkValidation(user));
+        final ValidationException exception = assertThrows(ValidationException.class, () -> UserController.validate(user));
         assertEquals("Email name can't be blank", exception.getMessage());
     }
 
@@ -34,7 +34,7 @@ public class UserValidationTest {
                 .birthday(LocalDate.of(2003, 2, 14))
                 .build();
 
-        final ValidationException exception = assertThrows(ValidationException.class, () -> UserController.checkValidation(user));
+        final ValidationException exception = assertThrows(ValidationException.class, () -> UserController.validate(user));
         assertEquals("Email name should contain '@'", exception.getMessage());
     }
 
@@ -47,7 +47,7 @@ public class UserValidationTest {
                 .birthday(LocalDate.of(2003, 2, 14))
                 .build();
 
-        final ValidationException exception = assertThrows(ValidationException.class, () -> UserController.checkValidation(user));
+        final ValidationException exception = assertThrows(ValidationException.class, () -> UserController.validate(user));
         assertEquals("Login can't be blank", exception.getMessage());
     }
 
@@ -60,7 +60,7 @@ public class UserValidationTest {
                 .birthday(LocalDate.of(2003, 2, 14))
                 .build();
 
-        final ValidationException exception = assertThrows(ValidationException.class, () -> UserController.checkValidation(user));
+        final ValidationException exception = assertThrows(ValidationException.class, () -> UserController.validate(user));
         assertEquals("Login can't contain spaces", exception.getMessage());
     }
 
@@ -73,7 +73,7 @@ public class UserValidationTest {
                 .birthday(LocalDate.of(2024, 2, 14))
                 .build();
 
-        final ValidationException exception = assertThrows(ValidationException.class, () -> UserController.checkValidation(user));
+        final ValidationException exception = assertThrows(ValidationException.class, () -> UserController.validate(user));
         assertEquals("Users birthday can't be in the future", exception.getMessage());
     }
 
@@ -85,7 +85,7 @@ public class UserValidationTest {
                 .birthday(LocalDate.of(2003, 2, 14))
                 .build();
 
-        UserController.checkValidation(user);
+        UserController.validate(user);
         assertEquals("1", user.getName());  // name = login when name == null
     }
 
@@ -98,7 +98,7 @@ public class UserValidationTest {
                 .birthday(LocalDate.of(2003, 2, 14))
                 .build();
 
-        UserController.checkValidation(user);
+        UserController.validate(user);
         assertEquals("1", user.getName());  // name = login when name == null
     }
 }
