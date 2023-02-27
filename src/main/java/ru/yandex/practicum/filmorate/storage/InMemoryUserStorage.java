@@ -1,7 +1,7 @@
-package ru.yandex.practicum.filmorate.controllers;
+package ru.yandex.practicum.filmorate.storage;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.IncorrectIdException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -12,15 +12,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@RestController
-@RequestMapping("/users")
 @Slf4j
-public class UserController {
+@Component
+public class InMemoryUserStorage implements UserStorage {
     private int id = 0;
     private final Map<Integer, User> users = new HashMap<>();
 
-    @PostMapping
-    private User createUser(@RequestBody User user) throws ValidationException {
+    @Override
+    public User createUser(User user) throws ValidationException {
         validate(user);
         user.setId(++id);
         users.put(user.getId(), user);
@@ -28,8 +27,8 @@ public class UserController {
         return user;
     }
 
-    @PutMapping
-    public User updateUser(@RequestBody User user) throws ValidationException, IncorrectIdException {
+    @Override
+    public User updateUser(User user) throws ValidationException, IncorrectIdException {
         validate(user);
 
         if (users.containsKey(user.getId())) {
@@ -42,7 +41,7 @@ public class UserController {
         }
     }
 
-    @GetMapping
+    @Override
     public List<User> getAllUsers() {
         return new ArrayList<>(users.values());
     }

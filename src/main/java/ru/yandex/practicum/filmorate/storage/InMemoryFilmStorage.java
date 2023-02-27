@@ -1,7 +1,7 @@
-package ru.yandex.practicum.filmorate.controllers;
+package ru.yandex.practicum.filmorate.storage;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.IncorrectIdException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -12,15 +12,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@RestController
-@RequestMapping("/films")
 @Slf4j
-public class FilmController {
+@Component
+public class InMemoryFilmStorage implements FilmStorage {
     private int id = 0;
     private final Map<Integer, Film> films = new HashMap<>();
 
-    @PostMapping
-    private Film addFilm(@RequestBody Film film) {
+    @Override
+    public Film addFilm(Film film) {
         validate(film);
         film.setId(++id);
         films.put(film.getId(), film);
@@ -28,8 +27,8 @@ public class FilmController {
         return film;
     }
 
-    @PutMapping
-    public Film updateFilm(@RequestBody Film film) throws ValidationException, IncorrectIdException {
+    @Override
+    public Film updateFilm(Film film) throws ValidationException, IncorrectIdException {
         validate(film);
 
         if (films.containsKey(film.getId())) {
@@ -42,7 +41,7 @@ public class FilmController {
         }
     }
 
-    @GetMapping
+    @Override
     public List<Film> getAllFilms() {
         return new ArrayList<>(films.values());
     }
