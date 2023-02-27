@@ -31,19 +31,31 @@ public class InMemoryFilmStorage implements FilmStorage {
     public Film updateFilm(Film film) throws ValidationException, IncorrectIdException {
         validate(film);
 
-        if (films.containsKey(film.getId())) {
-            films.put(film.getId(), film);
-            log.debug("Film '" + film.getName() + "' updated successfully");
-            return film;
-        } else {
+        if (!films.containsKey(film.getId())) {
             log.debug("Incorrect id");
             throw new IncorrectIdException("Incorrect id");
         }
+
+        films.put(film.getId(), film);
+        log.debug("Film '" + film.getName() + "' updated successfully");
+        return film;
     }
 
     @Override
     public List<Film> getAllFilms() {
+        log.debug("All users returned");
         return new ArrayList<>(films.values());
+    }
+
+    @Override
+    public Film getFilmById(Integer id) throws IncorrectIdException {
+        if (!films.containsKey(id)) {
+            log.debug("User with this id does not exist");
+            throw new IncorrectIdException("User with this id does not exist");
+        }
+
+        log.debug("Film with id '" + id + "' returned");
+        return films.get(id);
     }
 
     public static void validate(Film film) {

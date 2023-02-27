@@ -12,4 +12,6 @@ public interface UserStorage {
     User updateUser(User user) throws ValidationException, IncorrectIdException;
 
     List<User> getAllUsers();
+
+    User getUserById(Integer id) throws IncorrectIdException;
 }

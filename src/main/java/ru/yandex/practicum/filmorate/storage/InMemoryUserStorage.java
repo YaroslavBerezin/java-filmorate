@@ -31,19 +31,31 @@ public class InMemoryUserStorage implements UserStorage {
     public User updateUser(User user) throws ValidationException, IncorrectIdException {
         validate(user);
 
-        if (users.containsKey(user.getId())) {
-            users.put(user.getId(), user);
-            log.debug("User '" + user.getName() + "' updated successfully");
-            return user;
-        } else {
+        if (!users.containsKey(user.getId())) {
             log.debug("Incorrect id");
             throw new IncorrectIdException("Incorrect id");
         }
+
+        users.put(user.getId(), user);
+        log.debug("User '" + user.getName() + "' updated successfully");
+        return user;
     }
 
     @Override
     public List<User> getAllUsers() {
+        log.debug("All users returned");
         return new ArrayList<>(users.values());
+    }
+
+    @Override
+    public User getUserById(Integer id) throws IncorrectIdException {
+        if (!users.containsKey(id)) {
+            log.debug("User with id '" + id + "' does not exist");
+            throw new IncorrectIdException("User with id '" + id + "' does not exist");
+        }
+
+        log.debug("User with id '" + id + "' returned");
+        return users.get(id);
     }
 
     public static void validate(User user) {
