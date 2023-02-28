@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.IncorrectArgumentException;
@@ -9,12 +8,8 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
-@Slf4j
 @Service
 public class UserService {
     private final UserStorage userStorage;
@@ -41,29 +36,40 @@ public class UserService {
     }
 
     public User addFriend(Integer id, Integer friendId) throws IncorrectIdException {
+        if (getUserById(id).getFriendsIds() == null) {
+            getUserById(id).setFriendsIds(new HashSet<>());
+        }
+        if (getUserById(friendId).getFriendsIds() == null) {
+            getUserById(friendId).setFriendsIds(new HashSet<>());
+        }
+
         getUserById(id).getFriendsIds().add(Long.valueOf(friendId));
-        log.debug("Friend with id '" + friendId + "' is added");
+        getUserById(friendId).getFriendsIds().add(Long.valueOf(id));
         return getUserById(id);
     }
 
     public User deleteFriend(Integer id, Integer friendId) throws IncorrectIdException, IncorrectArgumentException {
+        if (getUserById(id).getFriendsIds() == null) {
+            getUserById(id).setFriendsIds(new HashSet<>());
+        }
+        if (getUserById(friendId).getFriendsIds() == null) {
+            getUserById(friendId).setFriendsIds(new HashSet<>());
+        }
+
         if (!getUserById(id).getFriendsIds().contains(Long.valueOf(friendId))) {
-            log.debug("User has not friend with id '" + friendId + "'");
             throw new IncorrectArgumentException("User has not friend with id '" + friendId + "'");
         }
 
         getUserById(id).getFriendsIds().remove(Long.valueOf(friendId));
-        log.debug("Friend with id '" + friendId + "' is deleted");
+        getUserById(friendId).getFriendsIds().remove(Long.valueOf(id));
         return getUserById(id);
     }
 
-    public Set<Long> getAllFriendsIds(Integer id) throws IncorrectIdException, IncorrectArgumentException {
+    public Set<Long> getAllFriendsIds(Integer id) throws IncorrectIdException {
         if (getUserById(id).getFriendsIds() == null) {
-            log.debug("User '" + getUserById(id).getName() + "' has not friends list");
-            throw new IncorrectArgumentException("User '" + getUserById(id).getName() + "' has not friends list");
+            getUserById(id).setFriendsIds(new HashSet<>());
         }
 
-        log.debug("Friends ids of '" + getUserById(id).getName() + "' returned");
         return getUserById(id).getFriendsIds();
     }
 
@@ -73,13 +79,8 @@ public class UserService {
         User otherUser = getUserById(otherId);
         Set<Long> commonFriends = new HashSet<>();
 
-        if (user.getFriendsIds() == null) {
-            log.debug("User '" + user.getName() + "' has not friends list");
-            throw new IncorrectArgumentException("User '" + user.getName() + "' has not friends list");
-        }
-        if (otherUser.getFriendsIds() == null) {
-            log.debug("User '" + otherUser.getName() + "' has not friends list");
-            throw new IncorrectArgumentException("User '" + otherUser.getName() + "' has not friends list");
+        if (user.getFriendsIds() == null | otherUser.getFriendsIds() == null) {
+            return commonFriends;
         }
 
         for (Long idFriend : user.getFriendsIds()) {
@@ -90,7 +91,6 @@ public class UserService {
             }
         }
 
-        log.debug("Common friends ids returned");
         return commonFriends;
     }
 }

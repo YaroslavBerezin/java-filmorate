@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.IncorrectArgumentException;
@@ -13,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 public class FilmService {
     private final FilmStorage filmStorage;
@@ -35,6 +33,15 @@ public class FilmService {
         return filmStorage.getAllFilms();
     }
 
+
+
+
+
+
+
+
+
+
     public Film getFilmById(Integer id) throws IncorrectIdException {
         return filmStorage.getFilmById(id);
     }
@@ -42,7 +49,6 @@ public class FilmService {
     public Film likeFilm(Integer id, Integer userId) throws IncorrectIdException {
         Film film = getFilmById(id);
         film.getLikesIds().add(Long.valueOf(userId));
-        log.debug("Film '" + film + "' is liked by user with id '" + userId + "'");
         return film;
     }
 
@@ -54,14 +60,12 @@ public class FilmService {
         }
 
         film.getLikesIds().remove(Long.valueOf(userId));
-        log.debug("Film '" + film + "' is unliked by user with id '" + userId + "'");
         return film;
     }
 
     public List<Film> getMostLikedFilms(Integer count) {
         List<Film> films = new ArrayList<>(getAllFilms());
 
-        log.debug("Films list is returned");
         return films.stream()
                 .sorted(this::compare)
                 .skip(0)
