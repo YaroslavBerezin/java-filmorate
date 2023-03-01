@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.IncorrectArgumentException;
@@ -11,6 +12,7 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 import java.util.*;
 
 @Service
+@Slf4j
 public class UserService {
     private final UserStorage userStorage;
 
@@ -35,62 +37,64 @@ public class UserService {
         return userStorage.getUserById(id);
     }
 
-    public User addFriend(Integer id, Integer friendId) throws IncorrectIdException {
-        if (getUserById(id).getFriendsIds() == null) {
-            getUserById(id).setFriendsIds(new HashSet<>());
-        }
-        if (getUserById(friendId).getFriendsIds() == null) {
-            getUserById(friendId).setFriendsIds(new HashSet<>());
+    public void addFriend(Integer id, Integer friendId) throws IncorrectIdException {
+        User user = getUserById(id);
+        User friend = getUserById(friendId);
+
+        if (user == null | friend == null) {
+            log.debug("Incorrect ID error: Users do not exist when adding friend");
+            throw new IncorrectIdException("Users do not exist when adding friend");
         }
 
-        getUserById(id).getFriendsIds().add(Long.valueOf(friendId));
-        getUserById(friendId).getFriendsIds().add(Long.valueOf(id));
-        return getUserById(id);
+        user.getFriendsIds().add(friendId);
+        friend.getFriendsIds().add(id);
+        log.debug("Friend with ID '" + friendId + "' successfully added to user '" + id + "'");
+        log.debug("Friend with ID '" + id + "' successfully added to user '" + friendId + "'");
     }
 
-    public User deleteFriend(Integer id, Integer friendId) throws IncorrectIdException, IncorrectArgumentException {
-        if (getUserById(id).getFriendsIds() == null) {
-            getUserById(id).setFriendsIds(new HashSet<>());
+    public void deleteFriend(Integer id, Integer friendId) throws IncorrectIdException, IncorrectArgumentException {
+        User user = getUserById(id);
+        User friend = getUserById(friendId);
+
+        if (user == null | friend == null) {
+            log.debug("Incorrect ID error: Users do not exist when deleting friend");
+            throw new IncorrectIdException("Users do not exist when deleting friend");
         }
-        if (getUserById(friendId).getFriendsIds() == null) {
-            getUserById(friendId).setFriendsIds(new HashSet<>());
+        if (!user.getFriendsIds().contains(friendId)) {
+            log.debug("Incorrect ID error: User has not friend with id '" + friendId + "' when deleting friend");
+            throw new IncorrectArgumentException("User has not friend with id '" + friendId + "' when deleting friend");
         }
 
-        if (!getUserById(id).getFriendsIds().contains(Long.valueOf(friendId))) {
-            throw new IncorrectArgumentException("User has not friend with id '" + friendId + "'");
-        }
-
-        getUserById(id).getFriendsIds().remove(Long.valueOf(friendId));
-        getUserById(friendId).getFriendsIds().remove(Long.valueOf(id));
-        return getUserById(id);
+        user.getFriendsIds().remove(friendId);
+        friend.getFriendsIds().remove(id);
     }
 
-    public Set<Long> getAllFriendsIds(Integer id) throws IncorrectIdException {
-        if (getUserById(id).getFriendsIds() == null) {
-            getUserById(id).setFriendsIds(new HashSet<>());
+    public List<User> getAllFriends(Integer id) throws IncorrectIdException {
+        User user = getUserById(id);
+        List<User> users = new ArrayList<>();
+
+        for (Integer friendsId : user.getFriendsIds()) {
+            users.add(getUserById(friendsId));
         }
 
-        return getUserById(id).getFriendsIds();
+        log.debug("All friends returned successfully");
+        return users;
     }
 
-
-    public Set<Long> getCommonFriendsIds(Integer id, Integer otherId) throws IncorrectIdException, IncorrectArgumentException {
+    public Set<User> getCommonFriendsIds(Integer id, Integer otherId) throws IncorrectIdException {
         User user = getUserById(id);
         User otherUser = getUserById(otherId);
-        Set<Long> commonFriends = new HashSet<>();
+        Set<User> commonFriends = new HashSet<>();
 
-        if (user.getFriendsIds() == null | otherUser.getFriendsIds() == null) {
-            return commonFriends;
-        }
-
-        for (Long idFriend : user.getFriendsIds()) {
-            for (Long otherIdFriend : otherUser.getFriendsIds()) {
+        for (Integer idFriend : user.getFriendsIds()) {
+            for (Integer otherIdFriend : otherUser.getFriendsIds()) {
                 if (Objects.equals(idFriend, otherIdFriend)) {
-                    commonFriends.add(idFriend);
+                    commonFriends.add(getUserById(idFriend));
                 }
             }
         }
 
+        log.debug("Common friends returned successfully");
         return commonFriends;
     }
 }

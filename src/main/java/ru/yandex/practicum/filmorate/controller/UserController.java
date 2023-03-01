@@ -42,25 +42,25 @@ public class UserController {
     }
 
     @PutMapping("/{id}/friends/{friendId}")
-    public User addFriend(@PathVariable Integer id,
+    public void addFriend(@PathVariable Integer id,
                           @PathVariable Integer friendId) throws IncorrectIdException {
-        return service.addFriend(id, friendId);
+        service.addFriend(id, friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
-    public User deleteFriend(@PathVariable Integer id,
+    public void deleteFriend(@PathVariable Integer id,
                              @PathVariable Integer friendId) throws IncorrectIdException, IncorrectArgumentException {
-        return service.deleteFriend(id, friendId);
+        service.deleteFriend(id, friendId);
     }
 
     @GetMapping("/{id}/friends")
-    public Set<Long> getAllFriends(@PathVariable Integer id) throws IncorrectIdException, IncorrectArgumentException {
-        return service.getAllFriendsIds(id);
+    public List<User> getAllFriends(@PathVariable Integer id) throws IncorrectIdException {
+        return service.getAllFriends(id);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
-    public Set<Long> getCommonFriends(@PathVariable Integer id,
-                                       @PathVariable Integer otherId) throws IncorrectIdException, IncorrectArgumentException {
+    public Set<User> getCommonFriends(@PathVariable Integer id,
+                                       @PathVariable Integer otherId) throws IncorrectIdException {
         return service.getCommonFriendsIds(id, otherId);
     }
 }

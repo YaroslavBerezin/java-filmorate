@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.IncorrectArgumentException;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class FilmService {
     private final FilmStorage filmStorage;
 
@@ -33,39 +35,34 @@ public class FilmService {
         return filmStorage.getAllFilms();
     }
 
-
-
-
-
-
-
-
-
-
-    public Film getFilmById(Integer id) throws IncorrectIdException {
+    public Film getFilmById(Integer id) throws IncorrectIdException, IncorrectArgumentException {
         return filmStorage.getFilmById(id);
     }
 
-    public Film likeFilm(Integer id, Integer userId) throws IncorrectIdException {
+    public Film likeFilm(Integer id, Integer userId) throws IncorrectIdException, IncorrectArgumentException {
         Film film = getFilmById(id);
-        film.getLikesIds().add(Long.valueOf(userId));
+        film.getLikesIds().add(userId);
+        log.debug("Film with ID '" + id + "' successfully liked by user with ID '" + userId + "'");
         return film;
     }
 
     public Film unlikeFilm(Integer id, Integer userId) throws IncorrectIdException, IncorrectArgumentException {
         Film film = getFilmById(id);
 
-        if (!film.getLikesIds().contains(Long.valueOf(userId))) {
-            throw new IncorrectArgumentException("Film '" + film + "' has not a like from user with id '" + userId + "'");
+        if (!film.getLikesIds().contains(userId)) {
+            log.debug("Incorrect Argument error: Film '" + film + "' has not likes from user with ID '" + userId + "' when unliking");
+            throw new IncorrectArgumentException("Film '" + film + "' has not likes from user with ID '" + userId + "' when unliking");
         }
 
-        film.getLikesIds().remove(Long.valueOf(userId));
+        film.getLikesIds().remove(userId);
+        log.debug("Film with id '" + id + "' successfully unliked by user with ID '" + userId + "'");
         return film;
     }
 
     public List<Film> getMostLikedFilms(Integer count) {
         List<Film> films = new ArrayList<>(getAllFilms());
 
+        log.debug("Most popular films returned successfully");
         return films.stream()
                 .sorted(this::compare)
                 .skip(0)

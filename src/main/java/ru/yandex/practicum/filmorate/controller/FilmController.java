@@ -36,13 +36,13 @@ public class FilmController {
     }
 
     @GetMapping("/{id}")
-    public Film getFilmById(@PathVariable Integer id) throws IncorrectIdException {
+    public Film getFilmById(@PathVariable Integer id) throws IncorrectIdException, IncorrectArgumentException {
         return service.getFilmById(id);
     }
 
     @PutMapping("/{id}/like/{userId}")
     public Film likeFilm(@PathVariable Integer id,
-                         @PathVariable Integer userId) throws IncorrectIdException {
+                         @PathVariable Integer userId) throws IncorrectIdException, IncorrectArgumentException {
         return service.likeFilm(id, userId);
     }
 

@@ -7,10 +7,13 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-@Slf4j
 @Component
+@Slf4j
 public class InMemoryUserStorage implements UserStorage {
     private int id = 0;
     private final Map<Integer, User> users = new HashMap<>();
@@ -29,8 +32,8 @@ public class InMemoryUserStorage implements UserStorage {
         validate(user);
 
         if (!users.containsKey(user.getId())) {
-            log.debug("Incorrect id");
-            throw new IncorrectIdException("Incorrect id");
+            log.debug("Incorrect ID error: User with this ID does not exist when updating");
+            throw new IncorrectIdException("User with this ID does not exist when updating");
         }
 
         users.put(user.getId(), user);
@@ -40,18 +43,18 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public List<User> getAllUsers() {
-        log.debug("All users returned");
+        log.debug("All users returned successfully");
         return new ArrayList<>(users.values());
     }
 
     @Override
     public User getUserById(Integer id) throws IncorrectIdException {
         if (!users.containsKey(id)) {
-            log.debug("User with id '" + id + "' does not exist");
-            throw new IncorrectIdException("User with id '" + id + "' does not exist");
+            log.debug("Incorrect ID error: User with ID '" + id + "' does not exist when getting by ID");
+            throw new IncorrectIdException("User with ID '" + id + "' does not exist when getting by ID");
         }
 
-        log.debug("User with id '" + id + "' returned");
+        log.debug("User with ID '" + id + "' returned successfully");
         return users.get(id);
     }
 

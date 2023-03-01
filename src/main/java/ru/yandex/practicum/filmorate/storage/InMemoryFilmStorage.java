@@ -12,8 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Slf4j
 @Component
+@Slf4j
 public class InMemoryFilmStorage implements FilmStorage {
     private int id = 0;
     private final Map<Integer, Film> films = new HashMap<>();
@@ -32,8 +32,8 @@ public class InMemoryFilmStorage implements FilmStorage {
         validate(film);
 
         if (!films.containsKey(film.getId())) {
-            log.debug("Incorrect id");
-            throw new IncorrectIdException("Incorrect id");
+            log.debug("Incorrect ID error: Film with this ID does not exist when updating");
+            throw new IncorrectIdException("Film with this ID does not exist when updating");
         }
 
         films.put(film.getId(), film);
@@ -43,18 +43,18 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public List<Film> getAllFilms() {
-        log.debug("All users returned");
+        log.debug("All users returned successfully");
         return new ArrayList<>(films.values());
     }
 
     @Override
     public Film getFilmById(Integer id) throws IncorrectIdException {
         if (!films.containsKey(id)) {
-            log.debug("User with this id does not exist");
-            throw new IncorrectIdException("User with this id does not exist");
+            log.debug("Incorrect ID error: Film with this ID does not exist when getting by ID");
+            throw new IncorrectIdException("Film with this ID does not exist when getting by ID");
         }
 
-        log.debug("Film with id '" + id + "' returned");
+        log.debug("Film with ID '" + id + "' returned successfully");
         return films.get(id);
     }
 
