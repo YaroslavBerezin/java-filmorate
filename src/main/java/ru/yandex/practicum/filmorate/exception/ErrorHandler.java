@@ -18,10 +18,4 @@ public class ErrorHandler {
     public ErrorResponse handleIncorrectIdException(final NotFoundException e) {
         return new ErrorResponse("Not Found error", e.getMessage());
     }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleThrowable(final Throwable e) {
-        return new ErrorResponse("Internal Server error", e.getMessage());
-    }
 }
