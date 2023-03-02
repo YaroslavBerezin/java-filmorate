@@ -84,8 +84,6 @@ public class FilmService {
     }
 
     private int compare(Film f0, Film f1) {
-        int result = f0.getLikesIds().size() - (f1.getLikesIds().size());
-        result = -1 * result;
-        return result;
+        return -1 * (f0.getLikesIds().size() - f1.getLikesIds().size());
     }
 }
