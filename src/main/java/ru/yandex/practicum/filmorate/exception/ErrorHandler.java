@@ -13,9 +13,9 @@ public class ErrorHandler {
         return new ErrorResponse("Validation error", e.getMessage());
     }
 
-    @ExceptionHandler({IncorrectIdException.class, NullPointerException.class, IncorrectArgumentException.class})
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleIncorrectIdException(final Exception e) {
+    public ErrorResponse handleIncorrectIdException(final NotFoundException e) {
         return new ErrorResponse("Not Found error", e.getMessage());
     }
 

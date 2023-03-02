@@ -1,57 +1,70 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.IncorrectArgumentException;
-import ru.yandex.practicum.filmorate.exception.IncorrectIdException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class FilmService {
     private final FilmStorage filmStorage;
 
-    @Autowired
-    public FilmService(FilmStorage filmStorage) {
-        this.filmStorage = filmStorage;
-    }
-
     public Film addFilm(Film film) {
+        log.debug("Film '" + film.getName() + "' added successfully");
         return filmStorage.addFilm(film);
     }
 
-    public Film updateFilm(Film film) throws ValidationException, IncorrectIdException {
-        return filmStorage.updateFilm(film);
+    public Film updateFilm(Film film) {
+        Optional<Film> optionalFilm = filmStorage.updateFilm(film);
+
+        if (optionalFilm.isEmpty()) {
+            log.debug("Incorrect ID error: Film with this ID does not exist when updating");
+            throw new NotFoundException("Film with this ID does not exist when updating");
+        }
+
+        log.debug("Film '" + film.getName() + "' updated successfully");
+        return optionalFilm.get();
     }
 
     public List<Film> getAllFilms() {
+        log.debug("All users returned successfully");
         return filmStorage.getAllFilms();
     }
 
-    public Film getFilmById(Integer id) throws IncorrectIdException, IncorrectArgumentException {
-        return filmStorage.getFilmById(id);
+    public Film getFilmById(Integer id) {
+        Optional<Film> optionalFilm = filmStorage.getFilmById(id);
+
+        if (optionalFilm.isEmpty()) {
+            log.debug("Incorrect ID error: Film with this ID does not exist when getting by ID");
+            throw new NotFoundException("Film with this ID does not exist when getting by ID");
+        }
+
+        log.debug("Film with ID '" + id + "' returned successfully");
+        return optionalFilm.get();
     }
 
-    public Film likeFilm(Integer id, Integer userId) throws IncorrectIdException, IncorrectArgumentException {
+    public Film likeFilm(Integer id, Integer userId) {
         Film film = getFilmById(id);
         film.getLikesIds().add(userId);
         log.debug("Film with ID '" + id + "' successfully liked by user with ID '" + userId + "'");
         return film;
     }
 
-    public Film unlikeFilm(Integer id, Integer userId) throws IncorrectIdException, IncorrectArgumentException {
+    public Film unlikeFilm(Integer id, Integer userId) {
         Film film = getFilmById(id);
 
         if (!film.getLikesIds().contains(userId)) {
             log.debug("Incorrect Argument error: Film '" + film + "' has not likes from user with ID '" + userId + "' when unliking");
-            throw new IncorrectArgumentException("Film '" + film + "' has not likes from user with ID '" + userId + "' when unliking");
+            throw new NotFoundException("Film '" + film + "' has not likes from user with ID '" + userId + "' when unliking");
         }
 
         film.getLikesIds().remove(userId);

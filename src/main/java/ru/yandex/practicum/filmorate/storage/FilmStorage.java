@@ -1,18 +1,16 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import ru.yandex.practicum.filmorate.exception.IncorrectArgumentException;
-import ru.yandex.practicum.filmorate.exception.IncorrectIdException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface FilmStorage {
     Film addFilm(Film film);
 
-    Film updateFilm(Film film) throws ValidationException, IncorrectIdException;
+    Optional<Film> updateFilm(Film film);
 
     List<Film> getAllFilms();
 
-    Film getFilmById(Integer id) throws IncorrectIdException, IncorrectArgumentException;
+    Optional<Film> getFilmById(Integer id);
 }

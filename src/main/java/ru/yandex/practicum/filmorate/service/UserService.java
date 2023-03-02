@@ -1,49 +1,61 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.IncorrectArgumentException;
-import ru.yandex.practicum.filmorate.exception.IncorrectIdException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class UserService {
     private final UserStorage userStorage;
 
-    @Autowired
-    public UserService(UserStorage userStorage) {
-        this.userStorage = userStorage;
-    }
-
-    public User createUser(User user) throws ValidationException {
+    public User createUser(User user) {
+        log.debug("User '" + user.getName() + "' created successfully");
         return userStorage.createUser(user);
     }
 
-    public User updateUser(User user) throws ValidationException, IncorrectIdException {
-        return userStorage.updateUser(user);
+    public User updateUser(User user) {
+        Optional<User> optionalUser = userStorage.updateUser(user);
+
+        if (optionalUser.isEmpty()) {
+            log.debug("Incorrect ID error: User with this ID does not exist when updating");
+            throw new NotFoundException("User with this ID does not exist when updating");
+        }
+
+        log.debug("User '" + user.getName() + "' updated successfully");
+        return optionalUser.get();
     }
 
     public List<User> getAllUsers() {
+        log.debug("All users returned successfully");
         return userStorage.getAllUsers();
     }
 
-    public User getUserById(Integer id) throws IncorrectIdException {
-        return userStorage.getUserById(id);
+    public User getUserById(Integer id) {
+        Optional<User> optionalUser = userStorage.getUserById(id);
+
+        if (optionalUser.isEmpty()) {
+            log.debug("Incorrect ID error: User with ID '" + id + "' does not exist when getting by ID");
+            throw new NotFoundException("User with ID '" + id + "' does not exist when getting by ID");
+        }
+
+        log.debug("User with ID '" + id + "' returned successfully");
+        return optionalUser.get();
     }
 
-    public void addFriend(Integer id, Integer friendId) throws IncorrectIdException {
+    public void addFriend(Integer id, Integer friendId) {
         User user = getUserById(id);
         User friend = getUserById(friendId);
 
         if (user == null | friend == null) {
             log.debug("Incorrect ID error: Users do not exist when adding friend");
-            throw new IncorrectIdException("Users do not exist when adding friend");
+            throw new NotFoundException("Users do not exist when adding friend");
         }
 
         user.getFriendsIds().add(friendId);
@@ -52,24 +64,26 @@ public class UserService {
         log.debug("Friend with ID '" + id + "' successfully added to user '" + friendId + "'");
     }
 
-    public void deleteFriend(Integer id, Integer friendId) throws IncorrectIdException, IncorrectArgumentException {
+    public void deleteFriend(Integer id, Integer friendId) {
         User user = getUserById(id);
         User friend = getUserById(friendId);
 
         if (user == null | friend == null) {
             log.debug("Incorrect ID error: Users do not exist when deleting friend");
-            throw new IncorrectIdException("Users do not exist when deleting friend");
+            throw new NotFoundException("Users do not exist when deleting friend");
         }
         if (!user.getFriendsIds().contains(friendId)) {
             log.debug("Incorrect ID error: User has not friend with id '" + friendId + "' when deleting friend");
-            throw new IncorrectArgumentException("User has not friend with id '" + friendId + "' when deleting friend");
+            throw new NotFoundException("User has not friend with id '" + friendId + "' when deleting friend");
         }
 
         user.getFriendsIds().remove(friendId);
         friend.getFriendsIds().remove(id);
+        log.debug("Friend with ID '" + friendId + "' successfully removed from user '" + id + "' friends list");
+        log.debug("Friend with ID '" + id + "' successfully removed from user '" + friendId + "' friends list");
     }
 
-    public List<User> getAllFriends(Integer id) throws IncorrectIdException {
+    public List<User> getAllFriends(Integer id) {
         User user = getUserById(id);
         List<User> users = new ArrayList<>();
 
@@ -81,7 +95,7 @@ public class UserService {
         return users;
     }
 
-    public Set<User> getCommonFriendsIds(Integer id, Integer otherId) throws IncorrectIdException {
+    public Set<User> getCommonFriendsIds(Integer id, Integer otherId) {
         User user = getUserById(id);
         User otherUser = getUserById(otherId);
         Set<User> commonFriends = new HashSet<>();
