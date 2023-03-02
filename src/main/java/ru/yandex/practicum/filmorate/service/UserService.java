@@ -37,20 +37,20 @@ public class UserService {
         return userStorage.getAllUsers();
     }
 
-    public User getUserById(Integer id) {
-        Optional<User> optionalUser = userStorage.getUserById(id);
+    public User getUserById(Integer userId) {
+        Optional<User> optionalUser = userStorage.getUserById(userId);
 
         if (optionalUser.isEmpty()) {
-            log.debug("Incorrect ID error: User with ID '" + id + "' does not exist when getting by ID");
-            throw new NotFoundException("User with ID '" + id + "' does not exist when getting by ID");
+            log.debug("Incorrect ID error: User with ID '" + userId + "' does not exist when getting by ID");
+            throw new NotFoundException("User with ID '" + userId + "' does not exist when getting by ID");
         }
 
-        log.debug("User with ID '" + id + "' returned successfully");
+        log.debug("User with ID '" + userId + "' returned successfully");
         return optionalUser.get();
     }
 
-    public void addFriend(Integer id, Integer friendId) {
-        User user = getUserById(id);
+    public void addFriend(Integer userId, Integer friendId) {
+        User user = getUserById(userId);
         User friend = getUserById(friendId);
 
         if (user == null | friend == null) {
@@ -59,13 +59,13 @@ public class UserService {
         }
 
         user.getFriendsIds().add(friendId);
-        friend.getFriendsIds().add(id);
-        log.debug("Friend with ID '" + friendId + "' successfully added to user '" + id + "'");
-        log.debug("Friend with ID '" + id + "' successfully added to user '" + friendId + "'");
+        friend.getFriendsIds().add(userId);
+        log.debug("Friend with ID '" + friendId + "' successfully added to user '" + userId + "'");
+        log.debug("Friend with ID '" + userId + "' successfully added to user '" + friendId + "'");
     }
 
-    public void deleteFriend(Integer id, Integer friendId) {
-        User user = getUserById(id);
+    public void deleteFriend(Integer userId, Integer friendId) {
+        User user = getUserById(userId);
         User friend = getUserById(friendId);
 
         if (user == null | friend == null) {
@@ -78,13 +78,13 @@ public class UserService {
         }
 
         user.getFriendsIds().remove(friendId);
-        friend.getFriendsIds().remove(id);
-        log.debug("Friend with ID '" + friendId + "' successfully removed from user '" + id + "' friends list");
-        log.debug("Friend with ID '" + id + "' successfully removed from user '" + friendId + "' friends list");
+        friend.getFriendsIds().remove(userId);
+        log.debug("Friend with ID '" + friendId + "' successfully removed from user '" + userId + "' friends list");
+        log.debug("Friend with ID '" + userId + "' successfully removed from user '" + friendId + "' friends list");
     }
 
-    public List<User> getAllFriends(Integer id) {
-        User user = getUserById(id);
+    public List<User> getAllFriends(Integer userId) {
+        User user = getUserById(userId);
         List<User> users = new ArrayList<>();
 
         for (Integer friendsId : user.getFriendsIds()) {
@@ -95,9 +95,9 @@ public class UserService {
         return users;
     }
 
-    public Set<User> getCommonFriendsIds(Integer id, Integer otherId) {
-        User user = getUserById(id);
-        User otherUser = getUserById(otherId);
+    public Set<User> getCommonFriendsIds(Integer userId, Integer otherUserId) {
+        User user = getUserById(userId);
+        User otherUser = getUserById(otherUserId);
         Set<User> commonFriends = new HashSet<>();
 
         for (Integer idFriend : user.getFriendsIds()) {

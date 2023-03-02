@@ -40,27 +40,27 @@ public class FilmService {
         return filmStorage.getAllFilms();
     }
 
-    public Film getFilmById(Integer id) {
-        Optional<Film> optionalFilm = filmStorage.getFilmById(id);
+    public Film getFilmById(Integer filmId) {
+        Optional<Film> optionalFilm = filmStorage.getFilmById(filmId);
 
         if (optionalFilm.isEmpty()) {
             log.debug("Incorrect ID error: Film with this ID does not exist when getting by ID");
             throw new NotFoundException("Film with this ID does not exist when getting by ID");
         }
 
-        log.debug("Film with ID '" + id + "' returned successfully");
+        log.debug("Film with ID '" + filmId + "' returned successfully");
         return optionalFilm.get();
     }
 
-    public Film likeFilm(Integer id, Integer userId) {
-        Film film = getFilmById(id);
+    public Film likeFilm(Integer filmId, Integer userId) {
+        Film film = getFilmById(filmId);
         film.getLikesIds().add(userId);
-        log.debug("Film with ID '" + id + "' successfully liked by user with ID '" + userId + "'");
+        log.debug("Film with ID '" + filmId + "' successfully liked by user with ID '" + userId + "'");
         return film;
     }
 
-    public Film unlikeFilm(Integer id, Integer userId) {
-        Film film = getFilmById(id);
+    public Film unlikeFilm(Integer filmId, Integer userId) {
+        Film film = getFilmById(filmId);
 
         if (!film.getLikesIds().contains(userId)) {
             log.debug("Incorrect Argument error: Film '" + film + "' has not likes from user with ID '" + userId + "' when unliking");
@@ -68,7 +68,7 @@ public class FilmService {
         }
 
         film.getLikesIds().remove(userId);
-        log.debug("Film with id '" + id + "' successfully unliked by user with ID '" + userId + "'");
+        log.debug("Film with id '" + filmId + "' successfully unliked by user with ID '" + userId + "'");
         return film;
     }
 
