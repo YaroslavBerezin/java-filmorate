@@ -5,7 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class FilmService {
     private final FilmStorage filmStorage;
+    private final UserStorage userStorage;
 
     public Film addFilm(Film film) {
         log.debug("Film '" + film.getName() + "' added successfully");
@@ -54,6 +57,13 @@ public class FilmService {
 
     public Film likeFilm(Integer filmId, Integer userId) {
         Film film = getFilmById(filmId);
+        Optional<User> optionalUser = userStorage.getUserById(userId);
+
+        if (optionalUser.isEmpty()) {
+            log.debug("Incorrect ID error: User with this ID does not exist when liking film");
+            throw new NotFoundException("User with this ID does not exist when liking film");
+        }
+
         film.getLikesIds().add(userId);
         log.debug("Film with ID '" + filmId + "' successfully liked by user with ID '" + userId + "'");
         return film;
